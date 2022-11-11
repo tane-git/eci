@@ -2,6 +2,7 @@
 
 mod cli;
 mod eth;
+mod reqwest;
 
 fn main() {
     // * easy
