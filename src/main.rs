@@ -1,6 +1,7 @@
 // use eci::{process_args};
 
 mod cli;
+mod eth;
 
 fn main() {
     // * easy

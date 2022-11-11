@@ -2,8 +2,12 @@ use std::path::PathBuf;
 
 use clap::{Parser, Subcommand};
 
+use crate::eth;
+
 #[derive(Parser)]
-#[command(author, version, about, long_about = None)]
+// #[command(author, version, about, long_about = None)]
+#[command(author, version)]
+#[command(about = "Use Ethereum RPCs", long_about = None)]
 pub struct Cli {
     /// Optional name to operate on
     pub name: Option<String>,
@@ -31,9 +35,6 @@ pub enum Commands {
 
     /// eth_blockNumber 
     Block {
-        /// thing
-        #[arg(short, long)]
-        list: bool
     }
 }
 
@@ -53,12 +54,8 @@ pub fn cli() {
                 println!("Not printing testing lists...");
             }
         }
-        Some(Commands::Block { list }) => {
-            if *list {
-                println!("Printing testing lists...");
-            } else {
-                println!("Not printing testing lists...");
-            }
+        Some(Commands::Block {}) => {
+            eth::blockNumber();
         }
         None => {}
     }
