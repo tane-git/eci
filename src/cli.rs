@@ -60,7 +60,7 @@ pub fn cli() {
         }
         Some(Commands::Method { method }) => {
             // eth::blockNumber();
-            eth::use_method(method);
+            eth::use_method(&method.as_str());
         }
         None => {}
     }

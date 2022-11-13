@@ -1,47 +1,33 @@
 use crate::reqwest;
+use strum_macros::{EnumString, Display};
+use std::str::FromStr;
 
-// pub enum Methods {
-//     BlockNumber,
-//     getBlockByNumber
-// }
-
-// an enum for the different methods as strings
-// pub enum Methods {
-//     BlockNumber,
-//     GetBlockByNumber,
-// }
-
-// type methods = "BlockNumber" | "GetBlockByNumber";
-
-pub fn use_method(method: &String) {
-    let methods = vec!["BlockNumber", "GetBlockByNumber"];
-
-    // let methods = {
-
-    // }
-
-    if methods.contains(&method.as_str()) {
-        println!("Method: {}", method);
-        reqwest::reqwest(method).await;
-    } else {
-        println!("Method not found");
-    }
+#[derive(EnumString, Debug, Display)]
+enum Methods {
+    BlockNumber,
+    GetBlockByNumber,
 }
 
-#[allow(non_snake_case)]
-pub fn blockNumber() {
-    println!("fetching blockNumber...");
-    match reqwest::reqwest("eth_blockNumber") {
-        Ok(_) => println!("ok"),
-        Err(err) => println!("{err}")
-    }
+pub fn use_method(method: &str) {
+    let method = Methods::from_str(method).unwrap();
+    println!("{:#?}", method);
+
+    let res = match method {
+        Methods::BlockNumber => {
+            reqwest::reqwest("eth_blockNumber")
+        }
+        Methods::GetBlockByNumber => {
+            reqwest::reqwest("eth_getBlockByNumber")
+        }
+    };
+
+//     res.unwrap_or_else(|e| {
+//         println!("Error: {}", e);
+//     });
 }
 
-#[allow(non_snake_case)]
-pub fn getBlockNumber() {
-    println!("fetching blockNumber...");
-    match reqwest::reqwest("eth_getBlockNumber") {
-        Ok(_) => println!("ok"),
-        Err(err) => println!("{err}")
-    }
+fn send_method(method: Methods) {
+    reqwest::reqwest(method.into()).unwrap_or_else(|e| {
+        println!("Error: {}", e);
+    });
 }
