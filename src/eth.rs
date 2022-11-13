@@ -4,8 +4,6 @@ use strum_macros::{EnumString, Display, EnumIter};
 use std::str::FromStr;
 use strum::IntoEnumIterator;
 
-
-
 #[allow(non_camel_case_types)]
 #[derive(EnumString, Debug, Display, EnumIter)]
 enum Methods {
