@@ -34,9 +34,13 @@ pub enum Commands {
     },
 
     /// eth_blockNumber 
-    Block {
-    }
+    Method {
+        /// use an rpc method
+        #[arg(short, long)]
+        method: String,
+    },
 }
+
 
 // * This function does all the clap stuff
 pub fn cli() {
@@ -54,8 +58,9 @@ pub fn cli() {
                 println!("Not printing testing lists...");
             }
         }
-        Some(Commands::Block {}) => {
-            eth::blockNumber();
+        Some(Commands::Method { method }) => {
+            // eth::blockNumber();
+            eth::use_method(method);
         }
         None => {}
     }

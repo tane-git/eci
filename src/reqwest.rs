@@ -3,27 +3,29 @@ use reqwest::Client;
 
 #[tokio::main]
 // async fn reqwest(url: &str) -> Result<(), Box<dyn std::error::Error>> {
-pub async fn reqwest() -> Result<(), Box<dyn std::error::Error>> {
+pub async fn reqwest(method: &str) -> Result<(), Box<dyn std::error::Error>> {
+    let eth_endpoint = "http://localhost:8545";
+
     let client = Client::new();
 
-    let body = r#"{
+    let body = format!(r#"{{
         "jsonrpc":"2.0",
-        "method":"eth_blockNumber",
+        "method":"{}",
         "params":[],
         "id":1
-    }"#;
+    }}"#, method);
 
-    let res = client.post("http://localhost:8545")
+    let res = client.post(eth_endpoint)
         .header("Content-Type", "application/json")
         .body(body)
         .send()
         .await?;
 
-    println!("{:#?}", res);
+    // println!("{:#?}", res);
 
     let text = res.text().await?;
 
-    println!("{:#?}", text);
+    // println!("{:#?}", text);
 
     crate::json::parse_data(&text)?;
 

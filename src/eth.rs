@@ -1,28 +1,47 @@
 use crate::reqwest;
 
-// what does making a mod here do?
-// pub mod eth {
-
-    // Keeping naming convention of wrapped
-    #[allow(non_snake_case)]
-    pub fn blockNumber() {
-        println!("fetching blockNumber...");
-
-        // let url = String::from("https://github.com/");
-
-        // reqwest::reqwest(&url).unwrap();
-        // reqwest::reqwest().unwrap();
-
-        match reqwest::reqwest() {
-            Ok(_) => println!("ok"),
-            Err(err) => println!("{err}")
-        }
-
-        // let res = reqwest::reqwest(&url);
-        // println!("{:?}", res);
-
-        // res.unwrap_or_else(|err| println!("{err}"));
-
-        // print!("{res}");
-    }
+// pub enum Methods {
+//     BlockNumber,
+//     getBlockByNumber
 // }
+
+// an enum for the different methods as strings
+// pub enum Methods {
+//     BlockNumber,
+//     GetBlockByNumber,
+// }
+
+// type methods = "BlockNumber" | "GetBlockByNumber";
+
+pub fn use_method(method: &String) {
+    let methods = vec!["BlockNumber", "GetBlockByNumber"];
+
+    // let methods = {
+
+    // }
+
+    if methods.contains(&method.as_str()) {
+        println!("Method: {}", method);
+        reqwest::reqwest(method).await;
+    } else {
+        println!("Method not found");
+    }
+}
+
+#[allow(non_snake_case)]
+pub fn blockNumber() {
+    println!("fetching blockNumber...");
+    match reqwest::reqwest("eth_blockNumber") {
+        Ok(_) => println!("ok"),
+        Err(err) => println!("{err}")
+    }
+}
+
+#[allow(non_snake_case)]
+pub fn getBlockNumber() {
+    println!("fetching blockNumber...");
+    match reqwest::reqwest("eth_getBlockNumber") {
+        Ok(_) => println!("ok"),
+        Err(err) => println!("{err}")
+    }
+}
