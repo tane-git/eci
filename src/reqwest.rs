@@ -21,11 +21,11 @@ pub async fn reqwest(method: &str) -> Result<(), Box<dyn std::error::Error>> {
         .send()
         .await?;
 
-    // println!("{:#?}", res);
+    println!("{:#?}", res);
 
     let text = res.text().await?;
 
-    // println!("{:#?}", text);
+    println!("{:#?}", text);
 
     crate::json::parse_data(&text)?;
 
