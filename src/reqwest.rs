@@ -3,17 +3,54 @@ use reqwest::Client;
 
 #[tokio::main]
 // async fn reqwest(url: &str) -> Result<(), Box<dyn std::error::Error>> {
-pub async fn reqwest(method: &str, params: String) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn reqwest(method: &String, params: &String, more_params: &Option<bool>)
+-> Result<(), Box<dyn std::error::Error>> {
     let eth_endpoint = "http://localhost:8545";
 
     let client = Client::new();
 
+    enum Thing<'a, 'b> {
+        ParamsRap(&'a String),
+        MoreParamsRap(&'b bool),
+    }
+
+    let mut things: Vec<Thing> = vec![
+        Thing::ParamsRap(params),
+        // Thing::MoreParamsRap(moreParams)
+    ];
+
+    match more_params {
+        Some(more_params) => {
+            things.push(Thing::MoreParamsRap(more_params));
+        }
+        None => {}
+    }
+
+    // convert Things from a vec to a string
+    let mut things_string = String::new();
+
+    for thing in things {
+        match thing {
+            Thing::ParamsRap(params) => {
+                let add = format!(r#""{params}", "#);
+                things_string.push_str(add.as_str());
+            }
+            Thing::MoreParamsRap(more_params) => {
+                let add = format!(r#"{more_params}, "#);
+                things_string.push_str(add.as_str());
+            }
+        }
+    }
+
+    // remove the last 2 characters of a string (to remove illegal ", " at the end)
+    let things_string = &things_string[..things_string.len() - 2];
+
     let body = format!(r#"{{
         "jsonrpc":"2.0",
-        "method":"{}",
-        "params":[],
+        "method":"{method}",
+        "params":[{things_string}],
         "id":1
-    }}"#, method);
+    }}"#);
 
     println!("body: {:#?}", body);
 

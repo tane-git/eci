@@ -41,8 +41,16 @@ pub enum Commands {
 
         /// provide a parameter
         #[arg(short, long)]
-        params: Option<String>,
+        number: Option<String>,
+
+        /// If true it returns the full transaction objects, if false only the hashes of the transactions.
+        #[arg(short, long)]
+        full_not_hash: Option<bool>,
     },
+
+    // /// provide a parameter
+    // #[arg(short, long)]
+    // params: Option<String>,
 }
 
 
@@ -62,8 +70,8 @@ pub fn cli() {
                 println!("Not printing testing lists...");
             }
         }
-        Some(Commands::Method { method, params }) => {
-            eth::use_method(method.as_str(), params);
+        Some(Commands::Method { method, number, full_not_hash }) => {
+            eth::use_method(method, number, full_not_hash);
         }
         None => {}
     }

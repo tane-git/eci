@@ -4,14 +4,14 @@ use std::{io::{self, Write}};
 use std::str::FromStr;
 use strum::IntoEnumIterator;
 
-pub fn use_method(method: &str, params: &Option<String>) {
+pub fn use_method(method: &String, params: &Option<String>, more_params: &Option<bool>) {
 
     let method = get_method(method);
     println!("calling method: {:#?}", method);
 
     let params: String = handle_params(params);
 
-    let res = reqwest::reqwest(&method.to_string(), params);
+    let res = reqwest::reqwest(&method.to_string(), &params, more_params);
 
     res.unwrap_or_else(|e| {
         println!("Error: {}", e);
