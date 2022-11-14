@@ -3,7 +3,7 @@ use reqwest::Client;
 
 #[tokio::main]
 // async fn reqwest(url: &str) -> Result<(), Box<dyn std::error::Error>> {
-pub async fn reqwest(method: &str) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn reqwest(method: &str, params: String) -> Result<(), Box<dyn std::error::Error>> {
     let eth_endpoint = "http://localhost:8545";
 
     let client = Client::new();
@@ -11,9 +11,11 @@ pub async fn reqwest(method: &str) -> Result<(), Box<dyn std::error::Error>> {
     let body = format!(r#"{{
         "jsonrpc":"2.0",
         "method":"{}",
-        "params":[],
+        "params":[{:?}, true],
         "id":1
-    }}"#, method);
+    }}"#, method, params);
+
+    println!("body: {:#?}", body);
 
     let res = client.post(eth_endpoint)
         .header("Content-Type", "application/json")

@@ -38,6 +38,10 @@ pub enum Commands {
         /// use an rpc method
         #[arg(short, long)]
         method: String,
+
+        /// provide a parameter
+        #[arg(short, long)]
+        params: Option<String>,
     },
 }
 
@@ -58,9 +62,8 @@ pub fn cli() {
                 println!("Not printing testing lists...");
             }
         }
-        Some(Commands::Method { method }) => {
-            // eth::blockNumber();
-            eth::use_method(&method.as_str());
+        Some(Commands::Method { method, params }) => {
+            eth::use_method(method.as_str(), params);
         }
         None => {}
     }

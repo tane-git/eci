@@ -11,12 +11,14 @@ enum Methods {
     eth_getBlockByNumber,
 }
 
-pub fn use_method(method: &str) {
+pub fn use_method(method: &str, params: &Option<String>) {
 
     let method = get_method(method);
     println!("calling method: {:#?}", method);
 
-    let res = reqwest::reqwest(&method.to_string());
+    let params: String = handle_params(params);
+
+    let res = reqwest::reqwest(&method.to_string(), params);
 
     res.unwrap_or_else(|e| {
         println!("Error: {}", e);
@@ -59,4 +61,13 @@ fn list_available_methods() {
     }
 
     println!("");
+}
+
+fn handle_params(params: &Option<String>) -> String {
+    let params: String = match params {
+        Some(params) => params.to_string(),
+        None => String::from(""),
+    };
+
+    return params
 }
