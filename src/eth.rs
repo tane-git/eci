@@ -9,9 +9,7 @@ pub fn use_method(method: &String, params: &Option<String>, more_params: &Option
     let method = get_method(method);
     println!("calling method: {:#?}", method);
 
-    let params: String = handle_params(params);
-
-    let res = reqwest::reqwest(&method.to_string(), &params, more_params);
+    let res = reqwest::reqwest(&method.to_string(), params, more_params);
 
     res.unwrap_or_else(|e| {
         println!("Error: {}", e);

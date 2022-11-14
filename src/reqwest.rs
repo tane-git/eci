@@ -3,7 +3,7 @@ use reqwest::Client;
 
 #[tokio::main]
 // async fn reqwest(url: &str) -> Result<(), Box<dyn std::error::Error>> {
-pub async fn reqwest(method: &String, params: &String, more_params: &Option<bool>)
+pub async fn reqwest(method: &String, params: &Option<String>, more_params: &Option<bool>)
 -> Result<(), Box<dyn std::error::Error>> {
     let eth_endpoint = "http://localhost:8545";
 
@@ -14,10 +14,14 @@ pub async fn reqwest(method: &String, params: &String, more_params: &Option<bool
         MoreParamsRap(&'b bool),
     }
 
-    let mut things: Vec<Thing> = vec![
-        Thing::ParamsRap(params),
-        // Thing::MoreParamsRap(moreParams)
-    ];
+    let mut things: Vec<Thing> = vec![];
+
+    match params {
+        Some(params) => {
+            things.push(Thing::ParamsRap(params));
+        }
+        None => {}
+    }
 
     match more_params {
         Some(more_params) => {
@@ -43,7 +47,12 @@ pub async fn reqwest(method: &String, params: &String, more_params: &Option<bool
     }
 
     // remove the last 2 characters of a string (to remove illegal ", " at the end)
-    let things_string = &things_string[..things_string.len() - 2];
+    if things_string.len() > 2 {
+        things_string.truncate(things_string.len() - 2);
+    }
+    // let things_string = &things_string[..things_string.len() - 2];
+
+    println!("things_string: {:#?}", things_string);
 
     let body = format!(r#"{{
         "jsonrpc":"2.0",
