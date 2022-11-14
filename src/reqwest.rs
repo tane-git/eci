@@ -11,9 +11,9 @@ pub async fn reqwest(method: &str, params: String) -> Result<(), Box<dyn std::er
     let body = format!(r#"{{
         "jsonrpc":"2.0",
         "method":"{}",
-        "params":[{:?}, true],
+        "params":[],
         "id":1
-    }}"#, method, params);
+    }}"#, method);
 
     println!("body: {:#?}", body);
 
