@@ -21,7 +21,7 @@ pub fn parse_data(data: &str) -> Result<()> {
         Some(string) => {
             let without_prefix = string.trim_start_matches("0x");
             let z = i64::from_str_radix(without_prefix, 16);
-            println!("{:?}", z);
+            println!("z: {:?}", z);
         },
         None => println!("No string")
     }

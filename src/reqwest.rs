@@ -3,61 +3,18 @@ use reqwest::Client;
 
 #[tokio::main]
 // async fn reqwest(url: &str) -> Result<(), Box<dyn std::error::Error>> {
-pub async fn reqwest(method: &String, params: &Option<String>, more_params: &Option<bool>)
+pub async fn reqwest(method: &String, params: &Option<Vec<String>>)
 -> Result<(), Box<dyn std::error::Error>> {
-    let eth_endpoint = "http://localhost:8545";
+    let eth_endpoint = "http://localhost:8545"; // move this somewhere? env variables maybe
 
     let client = Client::new();
 
-    enum Thing<'a, 'b> {
-        ParamsRap(&'a String),
-        MoreParamsRap(&'b bool),
-    }
-
-    let mut things: Vec<Thing> = vec![];
-
-    match params {
-        Some(params) => {
-            things.push(Thing::ParamsRap(params));
-        }
-        None => {}
-    }
-
-    match more_params {
-        Some(more_params) => {
-            things.push(Thing::MoreParamsRap(more_params));
-        }
-        None => {}
-    }
-
-    // convert Things from a vec to a string
-    let mut things_string = String::new();
-
-    for thing in things {
-        match thing {
-            Thing::ParamsRap(params) => {
-                let add = format!(r#""{params}", "#);
-                things_string.push_str(add.as_str());
-            }
-            Thing::MoreParamsRap(more_params) => {
-                let add = format!(r#"{more_params}, "#);
-                things_string.push_str(add.as_str());
-            }
-        }
-    }
-
-    // remove the last 2 characters of a string (to remove illegal ", " at the end)
-    if things_string.len() > 2 {
-        things_string.truncate(things_string.len() - 2);
-    }
-    // let things_string = &things_string[..things_string.len() - 2];
-
-    println!("things_string: {:#?}", things_string);
+    let parsed_params = parse_params(&params);
 
     let body = format!(r#"{{
         "jsonrpc":"2.0",
         "method":"{method}",
-        "params":[{things_string}],
+        "params":[{parsed_params}],
         "id":1
     }}"#);
 
@@ -73,32 +30,58 @@ pub async fn reqwest(method: &String, params: &Option<String>, more_params: &Opt
 
     let text = res.text().await?;
 
-    println!("{:#?}", text);
+    println!("text: {:#?}", text);
 
     crate::json::parse_data(&text)?;
 
     Ok(())
 }
 
-    // * other examples that have worked:
+fn parse_params(params: &Option<Vec<String>>) -> String {
+    let mut parsed_params = String::new();
 
-    // let resp = reqwest::get("https://httpbin.org/ip")
-    //     .await?
-    //     .json::<HashMap<String, String>>()
-    //     .await?;
-    // println!("{:#?}", resp);
-    // Ok(())
+    match params {
+        Some(params) => {
+            // for loop through params, if last param, don't add comma
+            for (i, param) in params.iter().enumerate() {
+                // push param into parsed_params with "" around it
+                if check_implied_type(param) {
+                    parsed_params.push_str(param);
+                } else {
+                    parsed_params.push_str(&format!("\"{}\"", param));
+                }
 
-    // let body = reqwest::get("https://www.rust-lang.org")
-    //     .await?
-    //     .text()
-    //     .await?;
-    // println!("{:#?}", body);
-    // Ok(())
+                if i < params.len() - 1 {
+                    parsed_params.push_str(",");
+                }
+            }
+        },
+        None => (),
+    }
 
-    // let resp = reqwest::get("https://httpbin.org/ip")
-    //     .await?
-    //     .json::<HashMap<String, String>>()
-    //     .await?;
-    // println!("{:#?}", resp);
-    // Ok(())
+    return parsed_params;
+}
+
+
+fn check_implied_type(param: &String) -> bool {
+    let not_strings = vec![
+        "true",
+        "false",
+        // "null",
+        // "0x",
+    ];
+
+    // return true if param is non_strings
+    for not_string in not_strings {
+        println!("param: {:#?}", param);
+        println!("not_string: {:#?}", not_string);
+
+        if param == not_string {
+            return true;
+        }
+
+        println!("no match")
+    }
+
+    return false
+}

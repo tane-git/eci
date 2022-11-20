@@ -4,16 +4,16 @@ use std::{io::{self, Write}};
 use std::str::FromStr;
 use strum::IntoEnumIterator;
 
-pub fn use_method(method: &String, params: &Option<String>, more_params: &Option<bool>) {
+pub fn use_method(method: &String, params: &Option<Vec<String>>) {
 
     let method = get_method(method);
-    println!("calling method: {:#?}", method);
 
-    let res = reqwest::reqwest(&method.to_string(), params, more_params);
+    let res = reqwest::reqwest(&method.to_string(), params);
 
     res.unwrap_or_else(|e| {
         println!("Error: {}", e);
     });
+
 }
 
 fn get_method(method: &str) -> Methods {
@@ -25,6 +25,7 @@ fn get_method(method: &str) -> Methods {
     return method
 }
 
+/// Lets the user try again if they enter an invalid method.
 fn try_again() -> Methods {
     print!(r#"Enter a valid method (or "ls"): "#);
     std::io::stdout().flush().unwrap();

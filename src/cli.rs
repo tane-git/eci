@@ -1,16 +1,16 @@
 use std::path::PathBuf;
 
-use clap::{Parser, Subcommand};
+use clap::{Parser, Subcommand, ValueEnum};
 
 use crate::eth;
 
 #[derive(Parser)]
-// #[command(author, version, about, long_about = None)]
 #[command(author, version)]
 #[command(about = "Use Ethereum RPCs", long_about = None)]
 pub struct Cli {
-    /// Optional name to operate on
-    pub name: Option<String>,
+
+    // /// Optional name to operate on
+    // pub name: Option<String>,
 
     /// Sets a custom config file
     #[arg(short, long, value_name = "FILE")]
@@ -20,9 +20,26 @@ pub struct Cli {
     #[arg(short, long, action = clap::ArgAction::Count)]
     pub debug: u8,
 
+    /// RPC method
+    method: String,
+
+    /// params
+    params: Option<Vec<String>>,
+
     #[command(subcommand)]
     pub command: Option<Commands>,
+
 }
+
+// #[allow(non_camel_case_types)]
+// #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
+// enum Method {
+//     eth_blockNumber,
+//     eth_getBalance,
+//     eth_call,
+//     eth_getBlockByNumber,
+//     eth_getTransactionReceipt,
+// }
 
 #[derive(Subcommand)]
 pub enum Commands {
@@ -33,25 +50,19 @@ pub enum Commands {
         list: bool,
     },
 
-    /// eth_blockNumber 
+    /// RPC methods 
     Method {
-        /// use an rpc method
-        #[arg(short, long)]
-        method: String,
 
-        /// provide a parameter
-        #[arg(short, long)]
-        number: Option<String>,
+        // /// use an rpc method
+        // #[arg(short, long)]
+        // method: String,
 
-        /// If true it returns the full transaction objects, if false only the hashes of the transactions.
+        /// parameters
         #[arg(short, long)]
-        full_not_hash: Option<bool>,
-    },
-
-    // /// provide a parameter
-    // #[arg(short, long)]
-    // params: Option<String>,
+        params: Vec<String>,
+    }
 }
+
 
 
 // * This function does all the clap stuff
@@ -70,27 +81,34 @@ pub fn cli() {
                 println!("Not printing testing lists...");
             }
         }
-        Some(Commands::Method { method, number, full_not_hash }) => {
-            eth::use_method(method, number, full_not_hash);
+        Some(Commands::Method { params }) => {
+            // eth::use_method(method, number, full_not_hash);
         }
         None => {}
     }
+
+
+    // * just testing here:
+    // let params = Some(Vec::<String>::new());
+    // eth::use_method(&cli.method, &params);
+
+    eth::use_method(&cli.method, &cli.params);
 
     // Continued program logic goes here...
 }
 
 fn handle(cli: &Cli) {
-    name(&cli);
+    // name(&cli);
     config(&cli);
     debug(&cli);
 }
 
-fn name(cli: &Cli) {
-    // You can check the value provided by positional arguments, or option arguments
-    if let Some(name) = cli.name.as_deref() {
-        println!("Value for name: {}", name);
-    }
-}
+// fn name(cli: &Cli) {
+//     // You can check the value provided by positional arguments, or option arguments
+//     if let Some(name) = cli.name.as_deref() {
+//         println!("Value for name: {}", name);
+//     }
+// }
 
 fn config(cli: &Cli) {
     if let Some(config_path) = cli.config.as_deref() {
